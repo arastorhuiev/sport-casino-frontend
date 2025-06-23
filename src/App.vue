@@ -1,85 +1,77 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { Button, Dialog, InputText } from 'primevue'
+import { ref, reactive } from 'vue'
+import { zodResolver } from '@primevue/forms/resolvers/zod'
+import { z } from 'zod'
+import { useToast } from 'primevue/usetoast'
+import { Form, FormField } from '@primevue/forms'
+import Message from 'primevue/message'
+
+const text = ref('')
+const visible = ref(false)
+
+const toast = useToast()
+
+const resolver = zodResolver(
+  z.object({
+    username: z.string().min(1, { message: 'Username is required.' }),
+    email: z.string().email({ message: 'Invalid email address.' }),
+    password: z.string().min(1, { message: 'Password is required.' }),
+    confirmPassword: z.string().min(1, { message: 'Confirm Password is required.' }),
+  }),
+)
+
+const onFormSubmit = ({ valid }: any) => {
+  console.log('Form submitted:', valid)
+  if (valid) {
+    toast.add({ severity: 'success', summary: 'Form is submitted.', life: 3000 })
+  }
+}
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <div class="card flex justify-center">
+    <Button label="Show" @click="visible = true" />
+    <Dialog
+      v-model:visible="visible"
+      modal
+      header="Register"
+      :style="{ width: '25rem' }"
+      :draggable="false"
+    >
+      <Form :resolver @submit="onFormSubmit" class="flex flex-col gap-2 w-full">
+        <FormField v-slot="$field" name="username" class="w-full flex flex-wrap gap-1">
+          <label for="username" class="font-semibold">Username</label>
+          <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
+            $field.error?.message
+          }}</Message>
+          <InputText id="username" class="w-full" />
+        </FormField>
+        <FormField v-slot="$field" name="email" class="w-full flex flex-wrap gap-1">
+          <label for="email" class="font-semibold">Email</label>
+          <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
+            $field.error?.message
+          }}</Message>
+          <InputText id="email" class="w-full" />
+        </FormField>
+        <FormField v-slot="$field" name="password" class="w-full flex flex-wrap gap-1">
+          <label for="password" class="font-semibold">Password</label>
+          <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
+            $field.error?.message
+          }}</Message>
+          <InputText id="password" class="w-full" />
+        </FormField>
+        <FormField v-slot="$field" name="confirmPassword" class="w-full flex flex-wrap gap-1">
+          <label for="confirm-password" class="font-semibold">Confirm Password</label>
+          <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
+            $field.error?.message
+          }}</Message>
+          <InputText id="confirm-password" class="w-full" />
+        </FormField>
+        <div class="flex justify-end mt-2">
+          <Button type="submit" label="Register"></Button>
+        </div>
+      </Form>
+    </Dialog>
+  </div>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
