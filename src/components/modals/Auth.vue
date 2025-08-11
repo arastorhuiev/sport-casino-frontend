@@ -60,7 +60,7 @@ const onFormSubmit = ({ valid }: any) => {
     :draggable="false"
     @hide="closeAuthModal"
   >
-    <Form :resolver @submit="onFormSubmit" class="flex flex-col gap-2 w-full">
+    <Form :resolver="authResolver" @submit="onFormSubmit" class="flex flex-col gap-2 w-full">
       <FormField v-slot="$field" name="username" class="w-full flex flex-wrap gap-1">
         <label for="username" class="font-semibold">Username</label>
         <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
